@@ -27,17 +27,17 @@ app.get("/restaurants/:id", (req, res) => {
 //search負責: 使用者可以透過搜尋餐廳名稱/類別來找到特定的餐廳
 app.get('/search', (req, res) => {
   const keyword = req.query.keyword.toLowerCase().trim()
+  const restaurants = restaurantList.results.filter(restaurant => { 
   // 利用 || 篩選 1.餐廳名稱 2.餐廳類別
-  const restaurants = restaurantList.results.filter(restaurant => {
-    return 
-    restaurant.name.toLowerCase().includes(keyword) || restaurant.category.toLowerCase().includes(keyword)
-  }) 
+    return restaurant.name.toLowerCase().includes(keyword) || restaurant.category.toLowerCase().includes(keyword)
+  })
+  // searchNoResults: 搜尋後查無此餐廳
+  if (restaurants.length === 0) {
+    res.render('searchNoResults', { keyword }) 
 
-    // 若不符合搜尋條件則回傳
-  if (restaurants.length !== 0) {
-    return res.send(`<h2>查無 ${keyword} ，請重新輸入</h2>`)
+  } else {
+    res.render('index', { restaurants, keyword })
   }
-  res.render('index', { restaurants, keyword })
 })
 
 app.listen(port, () => {
